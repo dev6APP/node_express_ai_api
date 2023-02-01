@@ -17,6 +17,11 @@ class Models {
         return Models.instance;
     }
 
+    async extracBase64Image(imgdata) {
+        const base64img = await imgdata.replace(/^data:([A-Za-z-+/]+);base64,/, '');
+        return base64img;
+    }
+
     async loadModel(model_location, modelName) {
         const yolov_5model = await tf.loadGraphModel(model_location);
         console.log(`${modelName} model ready to use`);
@@ -100,6 +105,20 @@ class Models {
         }
         return 0;
     }
+    async roboflowDetect(base64imagee) {
+        let roboflowx = await axios({
+            method: "POST",
+            url: "https://detect.roboflow.com/flowerd-drone/1",
+            params: {
+                api_key: "ibSyXKEsNKnMN4pyQIuk"
+            },
+            data: base64imagee,
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        });
+        return roboflowx.data.predictions.length;
+    }
     async splitImageAndDetect(src, number, classThreshold = this.classThreshold, useRoboflow = true) {
         const image = sharp(Buffer.from(src, "base64"));
         const { width, height } = await image.metadata();
@@ -122,25 +141,14 @@ class Models {
                 const chunkImage = await chunk.toBuffer({ resolveWithObject: true }).then(({ data, info }) => {
                     return data.toString("base64");
                 });
-
+                let flowers_here = 0
                 if (useRoboflow) {
-                    let roboflowx = await axios({
-                        method: "POST",
-                        url: "https://detect.roboflow.com/flowerd-drone/1",
-                        params: {
-                            api_key: "ibSyXKEsNKnMN4pyQIuk"
-                        },
-                        data: chunkImage,
-                        headers: {
-                            "Content-Type": "application/x-www-form-urlencoded"
-                        }
-                    })
-                    flowers += roboflowx.data.predictions.length;
+                    flowers_here = await this.roboflowDetect(chunkImage);
                 } else {
                     const imgBinary = await Buffer.from(chunkImage, 'base64')
-                    let flowers_here = await this.droneDetect(imgBinary, classThreshold);
-                    flowers += flowers_here;
+                    flowers_here = await this.droneDetect(imgBinary, classThreshold);
                 }
+                flowers += flowers_here;
             }
         }
         return flowers;
