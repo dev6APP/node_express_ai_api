@@ -25,7 +25,7 @@ router.post('/', async(req, res, next) => {
 
 /* GET . */
 router.get('/', function(req, res, next) {
-    res.send('Hello friend, this page is working fine for the phone pictures');
+    res.render('api', { title: 'Flower detection in Phone Pictures', url: 'https://nodebackendproject.azurewebsites.net/phone-big-img?' });
 });
 
 module.exports = router;

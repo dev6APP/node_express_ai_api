@@ -74,6 +74,10 @@ router.post('/yolov5-cropped', async(req, res, next) => {
 
 /* GET . */
 router.get('/', function(req, res, next) {
+    res.render('api', {
+        title: 'Flower detection in Drone Pictures',
+        url: 'https://nodebackendproject.azurewebsites.net/drone-big-img?'
+    });
     res.send('Hello friend, this page is working fine for the drone pictures');
 });
 
