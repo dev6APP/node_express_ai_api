@@ -1,0 +1,30 @@
+extends layout
+
+block content
+  h1= title
+  p Here is the example of how to use nodejs fetch to request the API in this page
+  br
+  pre 
+    code await fetch (#{url},
+    br
+    code      'method': 'POST',
+    br
+    code      'headers': {
+    br
+    code          'Accept': '*/*',
+    br
+    code          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+    br
+    code      },
+    br
+    code      'body':  'base64image': `data:image/jpeg;base64,${base64String}`
+    br
+    code    }
+    br
+    code  );
+    br
+    code }
+  br
+  span API created by Dev6 - Project 4 - Thomas More Geel
+
+  
